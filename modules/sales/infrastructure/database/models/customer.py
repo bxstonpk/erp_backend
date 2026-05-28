@@ -25,3 +25,4 @@ class Customer(Base):
     deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
     sales_orders = relationship("SalesOrder", back_populates="customer")
+    branches = relationship("CustomerBranch", back_populates="customer")

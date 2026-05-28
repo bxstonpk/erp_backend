@@ -10,6 +10,8 @@ class SalesOrder(Base):
     order_number: Mapped[str] = mapped_column(String, unique=True, index=True)
     order_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
 
+    tax_id: Mapped[Optional[UUID]] = mapped_column(UUID, ForeignKey("taxes.id"), nullable=True)
+
     currency_id: Mapped[UUID] = mapped_column(UUID, ForeignKey("currencies.id"))
     total_amount: Mapped[float] = mapped_column(Numeric(18, 2), default=0)
 
@@ -21,3 +23,4 @@ class SalesOrder(Base):
 
     customer = relationship("Customer", back_populates="sales_orders")
     lines = relationship("SalesOrderLine", back_populates="sales_order")
+    tax = relationship("Tax", back_populates="sales_orders")

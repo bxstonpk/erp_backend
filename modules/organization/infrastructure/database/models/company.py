@@ -28,8 +28,8 @@ class Company(Base):
 
     status: Mapped[str] = mapped_column(String, index=True) # active, inactive, pending
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utc)
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utc, onupdate=datetime.utc)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
     deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
     organization_group = relationship("OrganizationGroup", back_populates="companies")
@@ -39,5 +39,7 @@ class Company(Base):
     company_branches = relationship("CompanyBranch", back_populates="company")
     business_units = relationship("BusinessUnit", back_populates="company")
     departments = relationship("Department", back_populates="company")
+    cost_centers = relationship("CostCenter", back_populates="company")
     fiscal_periods = relationship("FiscalPeriod", back_populates="company")
     project_sites = relationship("ProjectSite", back_populates="company")
+    addresses = relationship("Address", back_populates="company")

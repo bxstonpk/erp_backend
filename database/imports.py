@@ -4,11 +4,15 @@ from sqlalchemy import (
     String,
     Integer,
     Float,
+    Numeric,
     Boolean,
     ForeignKey,
     DateTime,
-    Optional,
+    Table,
+    Column,
 )
+
+from typing import Optional
 
 from sqlalchemy.dialects.postgresql import (
     UUID,
@@ -21,4 +25,8 @@ from sqlalchemy.orm import (
     relationship,
 )
 
-from datetime import datetime
+from datetime import datetime, timezone
+
+
+def utcnow() -> datetime:
+    return datetime.now(timezone.utc)

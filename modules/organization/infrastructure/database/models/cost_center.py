@@ -15,8 +15,8 @@ class CostCenter(Base):
 
     status: Mapped[Optional[str]] = mapped_column(String, nullable=True)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utc)
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utc, onupdate=datetime.utc)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
     deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
     company = relationship("Company", back_populates="cost_centers")

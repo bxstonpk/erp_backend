@@ -16,8 +16,8 @@ class OrganizationGroup(Base):
 
     status: Mapped[str] = mapped_column(String, index=True) # active, inactive, pending
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utc)
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utc, onupdate=datetime.utc)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
     deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
     base_currency = relationship("Currency", back_populates="organization_groups")

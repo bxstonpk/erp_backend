@@ -1,0 +1,23 @@
+from database.imports import *
+
+class Branch(Base):
+    __tablename__ = "branches"
+
+    id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, index=True, default=uuid4)
+    company_id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("companies.id"), index=True)
+
+    code: Mapped[str] = mapped_column(String(20), index=True)
+    name_th: Mapped[str] = mapped_column(String(255), index=True)
+    name_en: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    branch_no: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)  # for tax invoice
+
+    address: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    phone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+
+    is_hq: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+    company = relationship("Company", back_populates="branches")

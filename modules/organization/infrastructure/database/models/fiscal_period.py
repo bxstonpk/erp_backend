@@ -3,23 +3,17 @@ from database.imports import *
 class FiscalPeriod(Base):
     __tablename__ = "fiscal_periods"
 
-    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, index=True)
-    company_id: Mapped[UUID] = mapped_column(UUID, ForeignKey("companies.id"))
-    
+    id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, index=True, default=uuid4)
+    company_id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("companies.id"), index=True)
+
     year: Mapped[int] = mapped_column(Integer, index=True)
-    period_number: Mapped[int] = mapped_column(Integer, index=True)
+    period: Mapped[int] = mapped_column(Integer)  # 1-12
 
-    start_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    start_date: Mapped[datetime] = mapped_column(Date)
+    end_date: Mapped[datetime] = mapped_column(Date)
 
-    status: Mapped[str] = mapped_column(String, index=True)
-
-    is_closed: Mapped[bool] = mapped_column(Boolean, default=False)
-    closed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
-
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
-    deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    status: Mapped[str] = mapped_column(String(10), default="OPEN", index=True)  # OPEN, CLOSED, LOCKED
+    closed_by: Mapped[Optional[UUID]] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    closed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
     company = relationship("Company", back_populates="fiscal_periods")
-    projects = relationship("Project", back_populates="fiscal_period")

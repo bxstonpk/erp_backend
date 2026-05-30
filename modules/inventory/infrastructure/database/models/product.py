@@ -3,25 +3,28 @@ from database.imports import *
 class Product(Base):
     __tablename__ = "products"
 
-    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, index=True)
-    company_id: Mapped[UUID] = mapped_column(UUID, ForeignKey("companies.id"))
+    id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, index=True, default=uuid4)
+    company_id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("companies.id"), index=True)
+    category_id: Mapped[Optional[UUID]] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("product_categories.id"), nullable=True)
 
-    uom_id: Mapped[UUID] = mapped_column(UUID, ForeignKey("units_of_measure.id"))
-    tax_id: Mapped[Optional[UUID]] = mapped_column(UUID, ForeignKey("taxes.id"), nullable=True)
+    code: Mapped[str] = mapped_column(String(50), index=True)
+    name_th: Mapped[str] = mapped_column(String(255), index=True)
+    name_en: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    product_type: Mapped[str] = mapped_column(String(20), default="PRODUCT")  # PRODUCT, SERVICE, RAW_MATERIAL, FINISHED_GOOD
+    base_uom_id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("units_of_measure.id"))
 
-    code: Mapped[str] = mapped_column(String, unique=True, index=True)
-    name: Mapped[str] = mapped_column(String, index=True)
-    description: Mapped[Optional[str]] = mapped_column(String)
-    product_type: Mapped[str] = mapped_column(String, index=True) # good, service
+    standard_cost: Mapped[Optional[float]] = mapped_column(Numeric(18, 4), default=0)
+    list_price: Mapped[Optional[float]] = mapped_column(Numeric(18, 4), default=0)
+    tax_type: Mapped[str] = mapped_column(String(10), default="VAT7")  # NO_TAX, VAT7, EXEMPT
+    is_inventory: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    purchase_price: Mapped[float] = mapped_column(Numeric(18, 2), default=0)
-    sale_price: Mapped[float] = mapped_column(Numeric(18, 2), default=0)
+    inventory_account_id: Mapped[Optional[UUID]] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=True)
+    cogs_account_id: Mapped[Optional[UUID]] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=True)
+    sales_account_id: Mapped[Optional[UUID]] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=True)
+    purchase_account_id: Mapped[Optional[UUID]] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=True)
 
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
-    deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    stock_levels = relationship("StockLevel", back_populates="product")
-    stock_moves = relationship("StockMove", back_populates="product")
+    category = relationship("ProductCategory", back_populates="products")

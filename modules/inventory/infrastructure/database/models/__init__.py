@@ -1,11 +1,15 @@
+from .product_category import ProductCategory
 from .product import Product
 from .warehouse import Warehouse
-from .stock_level import StockLevel
-from .stock_move import StockMove
+from .warehouse_location import WarehouseLocation
+from .inventory_balance import InventoryBalance
+from .inventory_transaction import InventoryTransaction
 
 __all__ = [
+    "ProductCategory",
     "Product",
     "Warehouse",
-    "StockLevel",
-    "StockMove",
+    "WarehouseLocation",
+    "InventoryBalance",
+    "InventoryTransaction",
 ]

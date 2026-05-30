@@ -1,13 +1,9 @@
-from .country import Country
 from .currency import Currency
-from .timezone import Timezone
 from .unit_of_measure import UnitOfMeasure
-from .tax import Tax
+from .business_partner import BusinessPartner
 
 __all__ = [
-    "Country",
     "Currency",
-    "Timezone",
     "UnitOfMeasure",
-    "Tax",
+    "BusinessPartner",
 ]

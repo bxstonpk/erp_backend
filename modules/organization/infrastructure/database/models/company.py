@@ -3,43 +3,27 @@ from database.imports import *
 class Company(Base):
     __tablename__ = "companies"
 
-    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, index=True)
-    organization_group_id: Mapped[UUID] = mapped_column(UUID, ForeignKey("organization_groups.id"))
+    id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, index=True, default=uuid4)
 
-    code: Mapped[str] = mapped_column(String, unique=True, index=True)
-    name: Mapped[str] = mapped_column(String, index=True)
-    legal_name: Mapped[str] = mapped_column(String, index=True)
-    tax_id: Mapped[str] = mapped_column(String, unique=True, index=True)
-    description: Mapped[Optional[str]] = mapped_column(String)
+    code: Mapped[str] = mapped_column(String(20), unique=True, index=True)
+    name_th: Mapped[str] = mapped_column(String(255), index=True)
+    name_en: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
-    registration_number: Mapped[str] = mapped_column(String, unique=True, index=True)
+    tax_id: Mapped[Optional[str]] = mapped_column(String(20), nullable=True, index=True)
+    registered_no: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    address: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    phone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    email: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    logo_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
-    email: Mapped[str] = mapped_column(String, unique=True, index=True)
-    phone: Mapped[Optional[str]] = mapped_column(String, index=True)
-    website: Mapped[Optional[str]] = mapped_column(String, index=True)
+    fiscal_year_start: Mapped[int] = mapped_column(Integer, default=1)  # month 1-12
+    base_currency: Mapped[str] = mapped_column(String(3), default="THB")
 
-    logo_url: Mapped[Optional[str]] = mapped_column(String)
-
-    base_currency_id: Mapped[UUID] = mapped_column(UUID, ForeignKey("currencies.id"))
-    country_id: Mapped[UUID] = mapped_column(UUID, ForeignKey("countries.id"))
-    timezone_id: Mapped[UUID] = mapped_column(UUID, ForeignKey("timezones.id"))
-
-    fiscal_year_start_month: Mapped[str] = mapped_column(String, index=True) # January, February, etc.
-
-    status: Mapped[str] = mapped_column(String, index=True) # active, inactive, pending
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
-    deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    organization_group = relationship("OrganizationGroup", back_populates="companies")
-    base_currency = relationship("Currency", back_populates="companies")
-    country = relationship("Country", back_populates="companies")
-    timezone = relationship("Timezone", back_populates="companies")
-    company_branches = relationship("CompanyBranch", back_populates="company")
-    business_units = relationship("BusinessUnit", back_populates="company")
+    branches = relationship("Branch", back_populates="company")
     departments = relationship("Department", back_populates="company")
-    cost_centers = relationship("CostCenter", back_populates="company")
     fiscal_periods = relationship("FiscalPeriod", back_populates="company")
-    project_sites = relationship("ProjectSite", back_populates="company")
-    addresses = relationship("Address", back_populates="company")

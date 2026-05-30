@@ -3,20 +3,19 @@ from database.imports import *
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, index=True)
+    id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, index=True, default=uuid4)
 
-    employee_id: Mapped[Optional[UUID]] = mapped_column(UUID, ForeignKey("employees.id"), nullable=True)
-
-    username: Mapped[str] = mapped_column(String, unique=True, index=True)
-    email: Mapped[str] = mapped_column(String, unique=True, index=True)
-    hashed_password: Mapped[str] = mapped_column(String)
-    full_name: Mapped[Optional[str]] = mapped_column(String, index=True)
+    username: Mapped[str] = mapped_column(String(100), unique=True, index=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    password_hash: Mapped[str] = mapped_column(String(255))
+    full_name: Mapped[str] = mapped_column(String(255), index=True)
+    employee_code: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
 
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    last_login_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_login_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
-    deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    roles = relationship("Role", secondary="user_roles", back_populates="users")
+    company_access = relationship("UserCompanyAccess", back_populates="user")
+    signatures = relationship("UserSignature", back_populates="user")

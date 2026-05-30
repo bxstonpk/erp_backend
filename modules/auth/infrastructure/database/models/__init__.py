@@ -1,12 +1,17 @@
-from .associations import user_roles, role_permissions
-from .user import User
-from .role import Role
+from .associations import role_permissions
 from .permission import Permission
+from .role import Role
+from .user import User
+from .user_company_access import UserCompanyAccess
+from .user_signature import UserSignature
+from .audit_log import AuditLog
 
 __all__ = [
-    "user_roles",
     "role_permissions",
-    "User",
-    "Role",
     "Permission",
+    "Role",
+    "User",
+    "UserCompanyAccess",
+    "UserSignature",
+    "AuditLog",
 ]

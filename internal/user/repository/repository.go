@@ -6,21 +6,21 @@ import (
 )
 
 type CommandRepository interface {
-	CreateUser(user *model.User) error
-	CreateRole(role *model.Role) error
-	CreatePermission(permission *model.Permission) error
-	AssignUserPermission(userPermission *model.UserPermission) error
-	AssignUserRole(userRole *model.UserRole) error
-	AssignRolePermission(rolePermission *model.RolePermission) error
-	AssignUserCompanyAccess(userCompanyAccess *model.UserCompanyAccess) error
+	CreateUser(user *entity.User) (error, *entity.User)
+	CreateRole(role *entity.Role) (error, *entity.Role)
+	CreatePermission(permission *entity.Permission) (error, *entity.Permission)
+	AssignUserPermission(userPermission *entity.User) (error, *entity.User)
+	AssignUserRole(userRole *entity.User) (error, *entity.User)
+	AssignRolePermission(rolePermission *model.RolePermission) (error, *model.RolePermission)
+	AssignUserCompanyAccess(userCompanyAccess *model.UserCompanyAccess) (error, *model.UserCompanyAccess)
 
-	UpdateUser(user *model.User) error
-	UpdateRole(role *model.Role) error
-	UpdatePermission(permission *model.Permission) error
-	UpdateUserPermission(userPermission *model.UserPermission) error
-	UpdateUserRole(userRole *model.UserRole) error
-	UpdateRolePermission(rolePermission *model.RolePermission) error
-	UpdateUserCompanyAccess(userCompanyAccess *model.UserCompanyAccess) error
+	UpdateUser(User *entity.User) (error, []*entity.User)
+	UpdateRole(Role *entity.Role) (error, []*entity.Role)
+	UpdatePermission(Permission *entity.Permission) (error, []*entity.Permission)
+	UpdateUserPermission(UserPermission *entity.Permission) (error, []*entity.Permission)
+	UpdateUserRole(UserId string, RoleId string) (error, []*entity.Role)
+	UpdateRolePermission(RolePermission *entity.Permission) (error, []*entity.Permission)
+	UpdateUserCompanyAccess(UserId string, CompanyAccess *entity.CompanyAccess) (error, []*entity.CompanyAccess)
 
 	DeleteUser(userUUID string) error
 	DeleteRole(roleUUID string) error
@@ -38,8 +38,8 @@ type QueryRepository interface {
 	GetAllUsers() ([]*entity.User, error)
 	GetAllRoles() ([]*entity.Role, error)
 	GetAllUserRoles() ([]*entity.Role, error)
-	GetAllUserPermissions() ([]*entity.UserPermission, error)
-	GetAllRolePermissions() ([]*entity.RolePermission, error)
+	GetAllUserPermissions() ([]*entity.Permission, error)
+	GetAllRolePermissions() ([]*entity.Permission, error)
 	GetAllUserCompanyAccesses() ([]*entity.CompanyAccess, error)
 }
 

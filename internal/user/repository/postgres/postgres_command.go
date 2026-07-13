@@ -1,3 +1,10 @@
+package postgres
+
+import (
+	"erp/backend/internal/user/entity"
+	"erp/backend/internal/user/repository/model"
+)
+
 func (p postgresUserRepository) CreateUser(user *model.User) error {
 	return p.db.Create(user).Error
 }
@@ -67,15 +74,15 @@ func (p postgresUserRepository) DeletePermission(permissionUUID string) error {
 }
 
 func (p postgresUserRepository) DeleteUserPermission(userPermissionUUID string) error {
-	return p.db.Where("user_permission_uuid = ?", userPermissionUUID).Delete(&entity.UserPermission{}).Error
+	return p.db.Where("user_permission_uuid = ?", userPermissionUUID).Delete(&entity.Permission{}).Error
 }
 
 func (p postgresUserRepository) DeleteUserRole(userRoleUUID string) error {
-	return p.db.Where("user_role_uuid = ?", userRoleUUID).Delete(&entity.UserRole{}).Error
+	return p.db.Where("user_role_uuid = ?", userRoleUUID).Delete(&entity.Role{}).Error
 }
 
 func (p postgresUserRepository) DeleteRolePermission(rolePermissionUUID string) error {
-	return p.db.Where("role_permission_uuid = ?", rolePermissionUUID).Delete(&entity.RolePermission{}).Error
+	return p.db.Where("role_permission_uuid = ?", rolePermissionUUID).Delete(&entity.Permission{}).Error
 }
 
 func (p postgresUserRepository) DeleteUserCompanyAccess(userCompanyAccessUUID string) error {

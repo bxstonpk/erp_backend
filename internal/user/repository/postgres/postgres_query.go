@@ -1,3 +1,7 @@
+package postgres
+
+import "erp/backend/internal/user/entity"
+
 func (p postgresUserRepository) GetUserByUUID(userUUID string) (*entity.User, error) {
 	user := &entity.User{}
 	err := p.db.Preload("UserRoles").Preload("UserPermissions").Preload("RolePermissions").Preload("UserCompanyAccess").Where("user_uuid = ?", userUUID).First(user).Error
@@ -48,8 +52,8 @@ func (p postgresUserRepository) GetAllUserRoles() ([]*entity.Role, error) {
 	return userRoles, nil
 }
 
-func (p postgresUserRepository) GetAllUserPermissions() ([]*entity.UserPermission, error) {
-	userPermissions := []*entity.UserPermission{}
+func (p postgresUserRepository) GetAllUserPermissions() ([]*entity.Permission, error) {
+	userPermissions := []*entity.Permission{}
 	err := p.db.Find(&userPermissions).Error
 	if err != nil {
 		return nil, err
@@ -58,8 +62,8 @@ func (p postgresUserRepository) GetAllUserPermissions() ([]*entity.UserPermissio
 	return userPermissions, nil
 }
 
-func (p postgresUserRepository) GetAllRolePermissions() ([]*entity.RolePermission, error) {
-	rolePermissions := []*entity.RolePermission{}
+func (p postgresUserRepository) GetAllRolePermissions() ([]*entity.Permission, error) {
+	rolePermissions := []*entity.Permission{}
 	err := p.db.Find(&rolePermissions).Error
 	if err != nil {
 		return nil, err

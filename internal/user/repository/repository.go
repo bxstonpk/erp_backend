@@ -2,25 +2,24 @@ package repository
 
 import (
 	"erp/backend/internal/user/entity"
-	"erp/backend/internal/user/repository/model"
 )
 
 type CommandRepository interface {
-	CreateUser(user *model.User) error
-	CreateRole(role *model.Role) error
-	CreatePermission(permission *model.Permission) error
-	AssignUserPermission(userPermission *model.UserPermission) error
-	AssignUserRole(userRole *model.UserRole) error
-	AssignRolePermission(rolePermission *model.RolePermission) error
-	AssignUserCompanyAccess(userCompanyAccess *model.UserCompanyAccess) error
+	CreateUser(user *entity.User) error
+	CreateRole(role *entity.Role) error
+	CreatePermission(permission *entity.Permission) error
+	AssignUserPermission(userUUID, permissionUUID string) error
+	AssignUserRole(userUUID, roleUUID string) error
+	AssignRolePermission(roleUUID, permissionUUID string) error
+	AssignUserCompanyAccess(userUUID string, access *entity.CompanyAccess) error
 
-	UpdateUser(user *model.User) error
-	UpdateRole(role *model.Role) error
-	UpdatePermission(permission *model.Permission) error
-	UpdateUserPermission(userPermission *model.UserPermission) error
-	UpdateUserRole(userRole *model.UserRole) error
-	UpdateRolePermission(rolePermission *model.RolePermission) error
-	UpdateUserCompanyAccess(userCompanyAccess *model.UserCompanyAccess) error
+	UpdateUser(user *entity.User) error
+	UpdateRole(role *entity.Role) error
+	UpdatePermission(permission *entity.Permission) error
+	UpdateUserPermission(userPermissionUUID, userUUID, permissionUUID string) error
+	UpdateUserRole(userRoleUUID, userUUID, roleUUID string) error
+	UpdateRolePermission(rolePermissionUUID, roleUUID, permissionUUID string) error
+	UpdateUserCompanyAccess(userCompanyUUID, userUUID string, access *entity.CompanyAccess) error
 
 	DeleteUser(userUUID string) error
 	DeleteRole(roleUUID string) error
@@ -37,10 +36,16 @@ type QueryRepository interface {
 
 	GetAllUsers() ([]*entity.User, error)
 	GetAllRoles() ([]*entity.Role, error)
-	GetAllUserRoles() ([]*entity.Role, error)
-	GetAllUserPermissions() ([]*entity.UserPermission, error)
-	GetAllRolePermissions() ([]*entity.RolePermission, error)
-	GetAllUserCompanyAccesses() ([]*entity.CompanyAccess, error)
+	GetAllPermissions() ([]*entity.Permission, error)
+
+	GetRoleByUUID(roleUUID string) (*entity.Role, error)
+	GetPermissionByUUID(permissionUUID string) (*entity.Permission, error)
+
+	GetUserRoles(userUUID string) ([]*entity.Role, error)
+	GetUserCompanyAccesses(userUUID string) ([]*entity.CompanyAccess, error)
+
+	GetPermissionAssignmentsByUser(userUUID string) ([]*entity.PermissionAssignment, error)
+	GetPermissionAssignmentsByRole(roleUUID string) ([]*entity.PermissionAssignment, error)
 }
 
 type Repository interface {

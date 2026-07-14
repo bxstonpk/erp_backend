@@ -5,6 +5,7 @@ import (
 	"erp/backend/internal/user/entity"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserUsecase interface {
@@ -17,11 +18,16 @@ type UserUsecase interface {
 }
 
 func (u *userUsecase) CreateUser(req dto.CreateUserRequest) (*entity.User, error) {
+	hashedPassword, err := hashPassword(req.Password)
+	if err != nil {
+		return nil, err
+	}
+
 	user := &entity.User{
 		ID:       uuid.NewString(),
 		Username: req.Username,
 		Email:    req.Email,
-		Password: req.Password,
+		Password: hashedPassword,
 		FullName: req.FullName,
 		Phone:    req.Phone,
 		Status:   req.Status,
@@ -32,6 +38,18 @@ func (u *userUsecase) CreateUser(req dto.CreateUserRequest) (*entity.User, error
 	}
 
 	return user, nil
+}
+
+// hashPassword bcrypt-hashes a plaintext password. entity.User.Password (and
+// the persisted "hashed_password" column) are only ever meant to hold the
+// hash, never the plaintext the caller submitted.
+func hashPassword(plain string) (string, error) {
+	hashed, err := bcrypt.GenerateFromPassword([]byte(plain), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+
+	return string(hashed), nil
 }
 
 func (u *userUsecase) GetUser(userUUID string) (*entity.User, error) {
@@ -59,7 +77,11 @@ func (u *userUsecase) UpdateUser(userUUID string, req dto.UpdateUserRequest) (*e
 	user.Status = req.Status
 
 	if req.Password != "" {
-		user.Password = req.Password
+		hashedPassword, err := hashPassword(req.Password)
+		if err != nil {
+			return nil, err
+		}
+		user.Password = hashedPassword
 	}
 
 	if err := u.repo.UpdateUser(user); err != nil {

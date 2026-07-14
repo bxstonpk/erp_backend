@@ -7,6 +7,8 @@ import (
 	"erp/backend/internal/user/dto"
 	"erp/backend/internal/user/entity"
 	"erp/backend/internal/user/usecase"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestUserUsecase_CreateUser(t *testing.T) {
@@ -23,7 +25,7 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		req := dto.CreateUserRequest{
 			Username: "jdoe",
 			Email:    "jdoe@example.com",
-			Password: "already-hashed",
+			Password: "plain-password",
 			FullName: "John Doe",
 			Phone:    "0800000000",
 			Status:   "active",
@@ -39,9 +41,15 @@ func TestUserUsecase_CreateUser(t *testing.T) {
 		if captured != got {
 			t.Fatal("CreateUser() did not persist the returned user")
 		}
-		if got.Username != req.Username || got.Email != req.Email || got.Password != req.Password ||
+		if got.Username != req.Username || got.Email != req.Email ||
 			got.FullName != req.FullName || got.Phone != req.Phone || got.Status != req.Status {
 			t.Fatalf("CreateUser() mismatched fields: %+v", got)
+		}
+		if got.Password == req.Password {
+			t.Fatal("CreateUser() stored the plaintext password instead of a hash")
+		}
+		if err := bcrypt.CompareHashAndPassword([]byte(got.Password), []byte(req.Password)); err != nil {
+			t.Fatalf("CreateUser() Password is not a valid bcrypt hash of the input: %v", err)
 		}
 	})
 
@@ -157,12 +165,15 @@ func TestUserUsecase_UpdateUser(t *testing.T) {
 		}
 		uc := usecase.New(repo)
 
-		got, err := uc.UpdateUser("u-1", dto.UpdateUserRequest{Password: "new-hash"})
+		got, err := uc.UpdateUser("u-1", dto.UpdateUserRequest{Password: "new-password"})
 		if err != nil {
 			t.Fatalf("UpdateUser() error = %v", err)
 		}
-		if got.Password != "new-hash" {
-			t.Fatalf("UpdateUser() Password = %q, want %q", got.Password, "new-hash")
+		if got.Password == "new-password" {
+			t.Fatal("UpdateUser() stored the plaintext password instead of a hash")
+		}
+		if err := bcrypt.CompareHashAndPassword([]byte(got.Password), []byte("new-password")); err != nil {
+			t.Fatalf("UpdateUser() Password is not a valid bcrypt hash of the input: %v", err)
 		}
 	})
 
